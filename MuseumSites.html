@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museum Timeline</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+    <img id="logo" src="logo.png" alt="Logo">
+    <h1>Museum Timeline</h1>
+    <nav>
+        <a href="index.html">Home</a>
+    </nav>
+</header>
+
+<main>
+    <!-- Museum Cards will be dynamically added here using JavaScript -->
+</main>
+
+<div class="modal" id="myModal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        try {
+            const response = await axios.get('http://localhost:3000/museums');
+            const museums = response.data;
+
+            const museumContainer = document.querySelector('main');
+            museums.forEach(museum => {
+                const card = document.createElement('div');
+                card.className = 'museum-card visible';
+                card.onclick = () => openModal(museum);
+
+                card.innerHTML = `
+                    <h2>${museum.name}</h2>
+                `;
+
+                museumContainer.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Error fetching museums:', error);
+            alert('Failed to fetch museums. Please try again later.');
+        }
+    });
+
+    function openModal(museum) {
+        const museumCards = document.querySelectorAll('.museum-card');
+        museumCards.forEach(card => card.classList.remove('visible'));
+
+        const modal = document.getElementById('myModal');
+        const modalContent = document.getElementById('modalContent');
+
+        modalContent.innerHTML = `
+            <h2>${museum.name}</h2>
+            <img src="${museum.image}" alt="${museum.name}">
+            <video width="100%" controls>
+                <source src="${museum.video}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p>${museum.description}</p>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('myModal');
+        modal.style.display = 'none';
+
+        const museumCards = document.querySelectorAll('.museum-card');
+        museumCards.forEach(card => card.classList.add('visible'));
+    }
+
+    window.onclick = function (event) {
+        const modal = document.getElementById('myModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+</script>
+
+</body>
+</html>
