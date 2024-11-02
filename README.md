@@ -1,2 +1,2 @@
 # Football360
-Capstone 
+Created a webapp for football fans where it is interactive and shows updated live scores and news
